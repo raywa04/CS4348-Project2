@@ -47,3 +47,23 @@ Right now, the focus is just making sure the threading system is wired up and lo
 4. Each thread prints a formatted line like: `"Customer 1 [Teller 0]: selects teller"`.
 5. Confirm all threads run and complete execution without issue.
 
+# Devlog Entry - [04-09-2025, 3:00PM] (Session Ends)
+
+Accomplishments:
+- Successfully created the initial project structure.
+- Implemented `main.py` with teller and customer thread functions.
+- Verified correct startup, printing, and joining of all threads.
+- Output is clean and matches expected format. Threading basics are confirmed functional.
+
+Problems Encountered:
+- None during this session — everything worked on the first attempt since this part was basic setup.
+
+Additional Accomplishments:
+- Confirmed thread IDs are passed properly to distinguish each teller and customer.
+
+Goals for Next Session:
+- Implement the “bank open” condition — customers can’t enter until all tellers are ready.
+- Introduce a semaphore to simulate only two customers being allowed through the door at once.
+- Begin wiring basic interaction between customer and teller — customer chooses a transaction type and notifies a teller.
+
+
