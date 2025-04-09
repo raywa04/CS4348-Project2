@@ -26,21 +26,21 @@ Synchronization is critical here to ensure:
 
 # Devlog Entry - [04-09-2025, 2:40PM] (Session Begins)
 
-Thoughts So Far:
+## Thoughts So Far:
 
 This project simulates a bank environment with threading and semaphores. It involves three tellers and fifty customers, where synchronization is essential to manage access to shared resources: the bank manager, the safe, and the bank entrance. Only two customers can be in the bank at once, only two tellers can be in the safe at a time, and only one teller can talk to the manager at once.
 
 Right now, the focus is just making sure the threading system is wired up and logging is working properly.
 
-Plan for This Session:
+## Plan for This Session:
 
-Goal:
+### Goal:
 - Set up the initial Python project structure.
 - Create a basic simulation with 3 teller threads and 5 customer threads.
 - Ensure each thread prints an identifying message when it starts running.
 - Verify that thread spawning, running, and joining works properly.
 
-Steps:
+### Steps:
 1. Create `main.py` and define teller and customer thread functions.
 2. Spawn 3 teller threads, each with a unique ID.
 3. Spawn 5 customer threads (starting small for testing).
