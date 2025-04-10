@@ -84,3 +84,31 @@ Thread spawning and identification for customers and tellers is working great. O
 2. Create a `threading.Semaphore(2)` to simulate door access (2 customers max).
 3. Allow each customer to choose a random transaction (deposit or withdraw).
 4. Print appropriate log messages showing each step: entering, choosing a teller, etc.
+
+# Devlog Entry - [04-09-2025, 9:25PM] (Session Ends)
+
+## Accomplishments:
+- Successfully implemented the condition that the **bank does not open** until all three tellers are ready.
+- Created a `bank_open` event that customers wait on before entering.
+- Added a `door_semaphore` to simulate only two customers being able to enter the bank at a time.
+- Each customer randomly chooses a transaction (either "Deposit" or "Withdraw") and logs it.
+- Verified through output that:
+  - Tellers start and notify readiness.
+  - Customers wait until the bank is open before entering.
+  - No more than two customers are inside at once.
+  - Output format and sequencing remain clean and consistent.
+
+## Problems Encountered:
+- None major. There was a small race condition when all tellers were checking in, but wrapping that logic inside a lock (`teller_ready_lock`) solved it cleanly.
+
+## Additional Accomplishments:
+- Simulated realistic customer delays before entering (random 0–100ms wait).
+- Used OOP (`Customer` and `Teller` subclasses of `threading.Thread`) to cleanly organize thread behavior for future expansion.
+
+## Goals for Next Session:
+- Implement actual customer-teller **interaction logic**.
+  - Allow customers to find an available teller or wait in line.
+  - Simulate teller requesting transaction, and customer responding.
+  - Add logging to trace the interaction flow.
+- Begin implementing manager and safe logic (semaphores) in parallel if time allows.
+
