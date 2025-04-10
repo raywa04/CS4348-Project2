@@ -4,7 +4,7 @@ import random
 import queue
 
 NUM_TELLERS = 3
-NUM_CUSTOMERS = 5  # Start small
+NUM_CUSTOMERS = 50  
 
 bank_open = threading.Event()
 door_semaphore = threading.Semaphore(2)
@@ -15,13 +15,16 @@ teller_ready_lock = threading.Lock()
 ready_tellers = queue.Queue()
 teller_available = threading.Condition()
 
+manager_lock = threading.Semaphore(1)
+safe_lock = threading.Semaphore(2)
+
 class Teller(threading.Thread):
     def __init__(self, tid):
         super().__init__()
         self.tid = tid
-        self.customer_sem = threading.Semaphore(0)  # Signaled when a customer arrives
-        self.transaction_sem = threading.Semaphore(0)  # Used to prompt customer for transaction
-        self.done_sem = threading.Semaphore(0)  # Used when teller finishes
+        self.customer_sem = threading.Semaphore(0)
+        self.transaction_sem = threading.Semaphore(0)
+        self.done_sem = threading.Semaphore(0)
         self.customer_id = None
         self.transaction_type = None
 
@@ -39,15 +42,38 @@ class Teller(threading.Thread):
                 teller_available.notify()
 
             self.customer_sem.acquire()
+
             if self.customer_id is None:
-                break  # simulation over
+                print(f"Teller {self.tid} [Teller {self.tid}]: shutting down")
+                break
 
             print(f"Teller {self.tid} [Teller {self.tid}]: asks for transaction")
-            self.transaction_sem.release()  # Prompt customer to respond
-            self.done_sem.acquire()  # Wait until customer provides transaction
+            self.transaction_sem.release()
+            self.done_sem.acquire()
+
+            if self.customer_id is None or self.transaction_type is None:
+                print(f"Teller {self.tid} [Teller {self.tid}]: shutting down")
+                break
 
             print(f"Teller {self.tid} [Teller {self.tid}]: received transaction: {self.transaction_type}")
-            print(f"Teller {self.tid} [Teller {self.tid}]: transaction with Customer {self.customer_id} complete\n")
+
+            if self.transaction_type == "Withdraw":
+                print(f"Teller {self.tid} [Teller {self.tid}]: going to manager")
+                manager_lock.acquire()
+                print(f"Teller {self.tid} [Teller {self.tid}]: speaking with manager")
+                time.sleep(random.uniform(0.005, 0.03))
+                print(f"Teller {self.tid} [Teller {self.tid}]: done with manager")
+                manager_lock.release()
+
+            print(f"Teller {self.tid} [Teller {self.tid}]: going to safe")
+            safe_lock.acquire()
+            print(f"Teller {self.tid} [Teller {self.tid}]: using safe")
+            time.sleep(random.uniform(0.01, 0.05))
+            print(f"Teller {self.tid} [Teller {self.tid}]: done using safe")
+            safe_lock.release()
+
+            if self.customer_id is not None:
+                print(f"Teller {self.tid} [Teller {self.tid}]: transaction with Customer {self.customer_id} complete\n")
 
             self.customer_id = None
             self.transaction_type = None
@@ -59,12 +85,11 @@ class Customer(threading.Thread):
 
     def run(self):
         bank_open.wait()
-        time.sleep(random.uniform(0, 0.1))
+        time.sleep(random.uniform(0, 0.1))  # Simulate staggered arrival
         door_semaphore.acquire()
 
         print(f"Customer {self.cid} [Customer {self.cid}]: enters the bank")
 
-        # Wait for a ready teller
         with teller_available:
             while ready_tellers.empty():
                 teller_available.wait()
@@ -72,13 +97,13 @@ class Customer(threading.Thread):
 
         print(f"Customer {self.cid} [Customer {self.cid}]: selects Teller {teller.tid}")
         teller.customer_id = self.cid
-        teller.customer_sem.release()  # Notify teller customer has arrived
+        teller.customer_sem.release()
 
-        teller.transaction_sem.acquire()  # Wait for teller to ask for transaction
+        teller.transaction_sem.acquire()
         transaction = random.choice(["Deposit", "Withdraw"])
         teller.transaction_type = transaction
         print(f"Customer {self.cid} [Customer {self.cid}]: says {transaction}")
-        teller.done_sem.release()  # Inform teller transaction sent
+        teller.done_sem.release()
 
         print(f"Customer {self.cid} [Customer {self.cid}]: leaving the bank\n")
         door_semaphore.release()
@@ -95,9 +120,10 @@ def main():
     for c in customers:
         c.join()
 
-    # Tell all tellers to exit
+    
     for t in tellers:
         t.customer_id = None
+        t.transaction_type = None  
         t.customer_sem.release()
     for t in tellers:
         t.join()
