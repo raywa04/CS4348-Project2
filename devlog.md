@@ -66,4 +66,21 @@ Right now, the focus is just making sure the threading system is wired up and lo
 - Introduce a semaphore to simulate only two customers being allowed through the door at once.
 - Begin wiring basic interaction between customer and teller — customer chooses a transaction type and notifies a teller.
 
+# Devlog Entry - [04-09-2025, 8:30PM] (Session Begins)
 
+## Thoughts So Far:
+
+Thread spawning and identification for customers and tellers is working great. Output formatting is in place and verified. Now, it's time to implement some of the bank’s constraints and the actual customer-teller interaction. This is where synchronization starts becoming important.
+
+## Plan for This Session:
+
+### Goal:
+- Ensure the bank does not open until all 3 tellers are ready.
+- Add a semaphore to control access through the door (max 2 customers in the bank).
+- Add basic handshake: customer waits until teller is ready, then announces transaction.
+
+### Steps:
+1. Add an event or barrier to synchronize the tellers — customers wait until all tellers are ready.
+2. Create a `threading.Semaphore(2)` to simulate door access (2 customers max).
+3. Allow each customer to choose a random transaction (deposit or withdraw).
+4. Print appropriate log messages showing each step: entering, choosing a teller, etc.
