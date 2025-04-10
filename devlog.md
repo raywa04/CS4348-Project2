@@ -141,7 +141,7 @@ This part will require careful use of semaphores, per-thread communication, and 
 3. Simulate a full interaction between a customer and a teller.
 4. Ensure output logs reflect this step-by-step communication.
 
-# Devlog Entry - [04-09-2025, 1:20AM] (Session Ends)
+# Devlog Entry - [04-10-2025, 1:20AM] (Session Ends)
 
 ## Accomplishments:
 
@@ -175,4 +175,34 @@ This part will require careful use of semaphores, per-thread communication, and 
   - Simulate transaction inside safe with a second sleep (10–50ms).
 - Continue to follow logging format for manager/safe interactions (3 lines: going to, using, done).
 
+# Devlog Entry - [04-10-2025, 1:30AM] (Session Begins)
+
+## Thoughts So Far:
+
+With teller-customer communication now working smoothly, it's time to move forward with the next two shared resources: **the manager and the safe**.
+
+Both require semaphores to limit access:
+- **Manager**: Only 1 teller can interact with the manager at a time, and only when the customer transaction is a "Withdraw".
+- **Safe**: Max 2 tellers can be in the safe at once, for all transactions.
+
+We’ll simulate each interaction with appropriate logging and a sleep to represent time spent.
+
+## Plan for This Session:
+
+### Goal:
+- Add manager and safe access to the teller transaction flow.
+- Use semaphores to control access:
+  - 1-teller `manager_lock`
+  - 2-teller `safe_lock`
+- Simulate manager interaction (withdrawals only) with sleep (5–30ms).
+- Simulate safe transaction with sleep (10–50ms).
+- Log each access with 3 lines: going to, using, done using.
+
+### Steps:
+1. Create `manager_lock = Semaphore(1)` and `safe_lock = Semaphore(2)`.
+2. Inside each teller’s transaction logic:
+   - If transaction is "Withdraw", acquire manager, sleep, release.
+   - Regardless of transaction, acquire safe, sleep, release.
+3. Add logging before, during, and after each access to the manager and safe.
+4. Test that only 1 teller talks to the manager at a time, and no more than 2 use the safe simultaneously.
 
