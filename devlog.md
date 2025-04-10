@@ -112,3 +112,31 @@ Thread spawning and identification for customers and tellers is working great. O
   - Add logging to trace the interaction flow.
 - Begin implementing manager and safe logic (semaphores) in parallel if time allows.
 
+# Devlog Entry - [04-09-2025, 9:50PM] (Session Begins)
+
+## Thoughts So Far:
+
+The simulation is shaping up well. We’ve got the core threading infrastructure working, and basic synchronization is in place — the bank opens only when all tellers are ready, and only two customers can enter at a time. Each customer currently picks a transaction and prints logs, but there’s no real interaction between customers and tellers yet.
+
+The next big piece is to simulate that interaction:
+- Customers need to be paired with available tellers.
+- Tellers should wait for customers, receive transactions, and respond accordingly.
+
+This part will require careful use of semaphores, per-thread communication, and possibly queues.
+
+## Plan for This Session:
+
+### Goal:
+- Create a system where customers wait for available tellers and then engage in a transaction.
+- Tellers should be idle until signaled by a customer.
+- Implement the back-and-forth where:
+  - Customer introduces themselves
+  - Teller asks for the transaction
+  - Customer responds with the transaction type
+  - Teller acknowledges
+
+### Steps:
+1. Set up a shared queue or structure to pair customers with tellers.
+2. Use condition variables or per-thread semaphores for signaling.
+3. Simulate a full interaction between a customer and a teller.
+4. Ensure output logs reflect this step-by-step communication.
