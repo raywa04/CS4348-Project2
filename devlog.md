@@ -140,3 +140,39 @@ This part will require careful use of semaphores, per-thread communication, and 
 2. Use condition variables or per-thread semaphores for signaling.
 3. Simulate a full interaction between a customer and a teller.
 4. Ensure output logs reflect this step-by-step communication.
+
+# Devlog Entry - [04-09-2025, 1:20AM] (Session Ends)
+
+## Accomplishments:
+
+- Implemented full **customer-teller interaction flow**.
+- Set up a global `ready_tellers` queue protected by a `Condition` variable (`teller_available`) so customers can wait until a teller is available.
+- Each `Teller` thread registers itself as ready and waits for a customer.
+- Each `Customer` waits for a ready teller, introduces itself, waits for the teller to ask for a transaction, responds with "Deposit" or "Withdraw", and then leaves the bank.
+- All interactions are synchronized using `Semaphore`s:
+  - `customer_sem` to signal the teller a customer has arrived.
+  - `transaction_sem` to let the customer know the teller is ready for the transaction.
+  - `done_sem` to notify the teller the transaction has been provided.
+- Verified clean and ordered output that matches project logging format.
+
+## Problems Encountered:
+
+- Needed to prevent customers from attempting to interact with a teller that wasn't ready. Solved this by wrapping the `ready_tellers` queue with a `Condition` that blocks until a teller is present.
+- Needed to ensure clean exit for tellers after customers finish. Added a shutdown mechanism by sending a `None` customer and signaling via semaphore.
+
+## Additional Accomplishments:
+
+- Output logs now simulate realistic bank interactions and show both teller and customer actions step by step.
+- Modular structure (OOP) is holding up well and ready for next layers of complexity (manager and safe).
+
+## Goals for Next Session:
+
+- Implement **interaction with the manager** for "Withdraw" transactions:
+  - Only one teller can interact with the manager at a time.
+  - Manager interaction is simulated with a sleep (5–30ms).
+- Implement **safe access logic**:
+  - Only two tellers can enter the safe at once.
+  - Simulate transaction inside safe with a second sleep (10–50ms).
+- Continue to follow logging format for manager/safe interactions (3 lines: going to, using, done).
+
+
