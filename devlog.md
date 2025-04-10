@@ -206,3 +206,41 @@ We’ll simulate each interaction with appropriate logging and a sleep to repres
 3. Add logging before, during, and after each access to the manager and safe.
 4. Test that only 1 teller talks to the manager at a time, and no more than 2 use the safe simultaneously.
 
+# Devlog Entry - [04-10-2025, 2:00AM] (Session End) FINAL
+
+## Accomplishments
+
+- Successfully completed and stress-tested a multi-threaded bank simulation in Python, involving:
+  - 3 concurrent teller threads
+  - Up to 50 customer threads
+  - Manager and safe access constraints enforced via semaphores
+  - Door semaphore limiting bank occupancy to 2 customers at a time
+
+- Implemented full customer-teller interaction with:
+  - Randomized arrival times
+  - Randomized transaction types (`Deposit` or `Withdraw`)
+  - Realistic delays and output messages for manager/safe access
+
+- Ensured proper inter-thread communication using:
+  - `Semaphore`, `Condition`, and `Queue` objects
+  - Custom signaling between each customer and their selected teller
+  - Clean shutdown of all tellers after the last customer exits
+
+- Resolved the following technical challenges:
+  - Tellers logging transactions with `Customer None` on shutdown ➝ **Fixed** via conditional checks before and after transaction phase
+  - Infinite loop from improperly queued tellers ➝ **Fixed** by shifting `ready_tellers.put()` to the start of the loop before shutdown check
+  - Race conditions around shutdown ➝ **Avoided** by explicitly nullifying `transaction_type` and guarding all transaction logic
+
+- Final version passed multiple test runs including:
+  - Small-scale tests (5 customers)
+  - Large-scale stress test with 50 customers
+  - All output logs match the required format and thread-safe sequencing
+
+## Key Design Decisions
+
+- Used **dedicated semaphores per teller** for transaction handshakes:
+  - `customer_sem`, `transaction_sem`, `done_sem`
+
+- Used a **shared queue (`ready_tellers`)** with `Condition` lock for customer-teller selection
+
+- Implemented a **centralized shutdown mechanism** from the main thread after all customers have exited
