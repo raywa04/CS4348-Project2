@@ -244,3 +244,14 @@ We’ll simulate each interaction with appropriate logging and a sleep to repres
 - Used a **shared queue (`ready_tellers`)** with `Condition` lock for customer-teller selection
 
 - Implemented a **centralized shutdown mechanism** from the main thread after all customers have exited
+
+# Devlog Entry - [04-13-2025, 9:30PM] (Session End) ACTUAL FINAL
+
+## Accomplishments
+
+- Had to rework some of the code because I spotted some mistakes when testing on the CS1 server. 
+
+## Issues 
+
+- Not all of the customers 0-49 (50 customers) are being logged. Issue has been resolved now though. 
+
